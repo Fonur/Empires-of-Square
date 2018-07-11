@@ -1,11 +1,15 @@
-captureTerritory = (player, clicked) => {
-  if (player.territories.length < 1) {
+function captureTerritory (player, clicked) {
+  console.log(typeof player.turn);
+  
+  
+  if (player.territories.length < 1 && player.turn === true) {
     player.addTerritory(clicked);      
     return true;
-  } else if (nearestSquare(clicked, player.territories) && checkTerritories(player.territories, clicked)) {
+  } else if (nearestSquare(clicked, player.territories) && checkTerritories(player.territories, clicked) && player.turn === true) {
     player.addTerritory(clicked);
     return true;
   }
+  return false;
 }
 
 const checkTerritories = (arr, val) => {

@@ -5,7 +5,7 @@ var io = require('socket.io')(server);
 const path = require('path');
 
 const { player } = require('./utils/players');
-const { captureTerritory} = require('./utils/capture');
+const { captureTerritory } = require('./utils/capture');
 
 var connects = [];
 var randomColor = require('randomcolor');
@@ -55,7 +55,7 @@ io.on('connection', function (socket) {
     turnTime(socketId);
   });
   
-  socket.on('coords', function (clicked) {  
+  socket.on('coords', function (clicked) {
     if(captureTerritory(p[socket.id], clicked)) {
       io.emit('createCoords', {
         clicked: clicked,
@@ -69,17 +69,28 @@ io.on('connection', function (socket) {
 
 const turnTime = (socketId) => {
   setInterval(() => {
-    turnToOther(socketId);    
+    turnToOther(socketId); 
     var nextId = connects[getNextPlayer(socketId)];
-    p[nextId].turn = true;
-    io.emit('turnTime', `${Object.values(p[socketId].name)}'s turn`);
+    playerRound(nextId);
+
     socketId = nextId;
+    io.emit('turnTime', `${Object.values(p[socketId].name)}'s turn`);
   }, 5000);
 }
 
+  const playerRound = (socketId) => {
+    connects.forEach(el => {
+      if (el === socketId) {
+        p[el].turn = true;
+        console.log(p[el]);
+      } else {
+      p[el].turn = false;
+      console.log(p[el]);      
+      }
+    });
+  }
+
 const turnToOther = (socketId) => {
-  p[socketId].turn = false;
-  console.log(`${socketId}'`);
   console.log(JSON.stringify(p[socketId]));
 }
 
