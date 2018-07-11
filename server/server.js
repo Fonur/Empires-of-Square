@@ -45,14 +45,15 @@ io.on('connection', function (socket) {
       }
 
     if(countPlayer >= 2 && !started) {
+      started = true;
       socket.emit('startTime', socket.id);
       console.log(`${socket.id}'s time started`);
-      started = true;
     }
   });
 
   socket.on('turnToOther', function (socketId) {
-    turnTime(socketId);
+    if (started)
+      turnTime(socketId);
   });
   
   socket.on('coords', function (clicked) {
@@ -68,31 +69,31 @@ io.on('connection', function (socket) {
 
 
 const turnTime = (socketId) => {
-  setInterval(() => {
-    turnToOther(socketId); 
-    var nextId = connects[getNextPlayer(socketId)];
-    playerRound(nextId);
-
-    socketId = nextId;
-    io.emit('turnTime', `${Object.values(p[socketId].name)}'s turn`);
-  }, 5000);
+    var remainTime = 30;
+    setInterval(() => {
+      io.emit('turnTime', `${Object.values(p[socketId].name)}'s turn. ${remainTime}`);
+      remainTime--;
+      if (remainTime < 1)
+      {        
+        var nextId = connects[getNextPlayer(socketId)];
+        playerRound(nextId);
+        socketId = nextId;
+        p[socketId].capture = 0;
+        remainTime = 30;
+      }
+    }, 1000);
 }
 
   const playerRound = (socketId) => {
     connects.forEach(el => {
       if (el === socketId) {
-        p[el].turn = true;
-        console.log(p[el]);
+        p[el].turn = true;        
       } else {
-      p[el].turn = false;
-      console.log(p[el]);      
+      p[el].turn = false;     
       }
     });
   }
 
-const turnToOther = (socketId) => {
-  console.log(JSON.stringify(p[socketId]));
-}
 
 const getNextPlayer = (socketId) => {
   var dondur = 0;

@@ -4,7 +4,9 @@ class player {
     this.name = name;
     this.color = color;
     this.territories = [];
+    this.power = 9;
     this.turn = false;
+    this.capture = 0;
   }
 
   addTerritory(territory) {

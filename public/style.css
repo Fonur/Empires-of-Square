@@ -11,9 +11,9 @@ table {
 }
 
 td {
-  background:#FFE7AA;
-  height:60px;
-  width:60px;
+  background:rgb(230, 198, 111);
+  height:20px;
+  width:20px;
   text-align:center;
   border: solid 1px;
 }

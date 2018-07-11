@@ -1,15 +1,31 @@
-function captureTerritory (player, clicked) {
-  console.log(typeof player.turn);
-  
-  
-  if (player.territories.length < 1 && player.turn === true) {
-    player.addTerritory(clicked);      
-    return true;
-  } else if (nearestSquare(clicked, player.territories) && checkTerritories(player.territories, clicked) && player.turn === true) {
-    player.addTerritory(clicked);
+function captureTerritory(player, clicked) {
+  if (checkPower(player)) {
+    if (player.territories.length < 1 && player.turn === true) {
+      player.addTerritory(clicked);
+      player.capture++;
+      console.log(player.capture);      
+      return true;
+    } else if (nearestSquare(clicked, player.territories) && checkTerritories(player.territories, clicked) && player.turn === true) {
+      player.addTerritory(clicked);
+      player.capture++;
+      console.log(player.capture);
+      
+      return true;
+    }
+    return false;
+  }
+  return false;
+}
+
+function checkPower(player) {
+  if (player.power > player.capture) {
     return true;
   }
   return false;
+}
+
+function coinFlip() {
+  return Math.floor(Math.random() * 2);
 }
 
 const checkTerritories = (arr, val) => {
