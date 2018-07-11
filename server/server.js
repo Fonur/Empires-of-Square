@@ -3,10 +3,14 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 const path = require('path');
+
 const { player } = require('./utils/players');
 const { captureTerritory} = require('./utils/capture');
+
+var connects = [];
 var randomColor = require('randomcolor');
 var p = [];
+var started = false;
 
 const publicPath = path.join(__dirname, '../public');
 
@@ -28,23 +32,29 @@ io.on('connection', function (socket) {
   });
 
   socket.on('createPlayer', function (name) {
-    p[socket.id] = new player(socket.id, name, color);  
+    p[socket.id] = new player(socket.id, name, color);     
     var countPlayer = 0;
-    for (var i in io.sockets.connected) {
-      countPlayer++;
-      var s = io.sockets.connected[i];
-      if (socket.id === s.id) {
-          continue;
+      for (var i in io.sockets.connected) {
+        var s = io.sockets.connected[i];
+        connects[countPlayer] = s.id;
+        countPlayer++;                
+        if (socket.id === s.id) {
+            continue;
+        }
+        socket.emit('loadOtherPlayers', p[s.id]);
       }
-      socket.emit('loadOtherPlayers', p[s.id]);
-    }
-    
-    if(countPlayer === 1) {
-      socket.emit('startTime', socket.id);      
-    }
 
+    if(countPlayer >= 2 && !started) {
+      socket.emit('startTime', socket.id);
+      console.log(`${socket.id}'s time started`);
+      started = true;
+    }
   });
 
+  socket.on('turnToOther', function (socketId) {
+    turnTime(socketId);
+  });
+  
   socket.on('coords', function (clicked) {  
     if(captureTerritory(p[socket.id], clicked)) {
       io.emit('createCoords', {
@@ -56,5 +66,31 @@ io.on('connection', function (socket) {
   });
 });
 
+
+const turnTime = (socketId) => {
+  setInterval(() => {
+    turnToOther(socketId);    
+    var nextId = connects[getNextPlayer(socketId)];
+    p[nextId].turn = true;
+    io.emit('turnTime', `${Object.values(p[socketId].name)}'s turn`);
+    socketId = nextId;
+  }, 5000);
+}
+
+const turnToOther = (socketId) => {
+  p[socketId].turn = false;
+  console.log(`${socketId}'`);
+  console.log(JSON.stringify(p[socketId]));
+}
+
+const getNextPlayer = (socketId) => {
+  var dondur = 0;
+  connects.forEach((el, i) => {
+    if (el === socketId && i != (connects.length - 1)) {
+      dondur = i + 1;
+    }
+  });
+  return dondur;
+}
 
 server.listen(3000);

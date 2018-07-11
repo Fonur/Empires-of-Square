@@ -14,6 +14,15 @@ socket.on('connect', () => {
   });
 });
 
+socket.on('startTime', function(socketId) {
+  socket.emit('turnToOther', socketId);
+});
+
+socket.on('turnTime', function(message) {
+  var h3 = document.querySelector('h3');
+  h3.innerHTML = message;
+});
+
 socket.on('loadOtherPlayers', function(coords) {
   console.log(coords);
   document.querySelector('.arena').innerHTML = '';
@@ -32,12 +41,6 @@ socket.on('createCoords', function (coords) {
   document.getElementById(clicked).setAttribute('style', `background: ${color}`);  
 });
 
-socket.on('startTime', function(socketId) {
-  var remain = turnTime();
-  if (remain) {
-    socket.emit('turnOther', socketId);
-  }
-});
 
 const createBoard = () => {
   for (var i = 0; i < 8; i++) {
@@ -49,19 +52,6 @@ const createBoard = () => {
       tr.insertAdjacentElement('beforeend', td);
     }
   }
-}
-
-const turnTime = async () => {
-  var i = 30;
-  var tickTack = await setInterval(() => {
-    i--;
-    var h3 = document.querySelector('h3');
-    h3.innerHTML =  'Remain Time: ' + i;
-    if (i === 0) {
-      clearInterval(tickTack);
-      
-    }
-  }, 1000);
 }
 
 createBoard();
