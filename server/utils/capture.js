@@ -1,20 +1,29 @@
-function captureTerritory(player, clicked) {
-  if (checkPower(player)) {
-    if (player.territories.length < 1 && player.turn === true) {
-      player.addTerritory(clicked);
+var territories = [];
+
+function captureTerritory(player) {
+  territories.forEach(territory => {
+    player.territories.push(territory);
+  });
+}
+
+function selectTerritory(player, clicked) { 
+  if (checkPower(player) && !beforeClick) {
+    if (territories.length < 1 && player.turn === true) {
+      territories.push(clicked);
       player.capture++;
-      console.log(player.capture);      
-      return true;
     } else if (nearestSquare(clicked, player.territories) && checkTerritories(player.territories, clicked) && player.turn === true) {
-      player.addTerritory(clicked);
+      territories.push(clicked);
       player.capture++;
-      console.log(player.capture);
-      
-      return true;
     }
-    return false;
   }
-  return false;
+}
+
+function attack(player) {
+  if (coinFlip()) {
+    captureTerritory(player, territories);
+    territories = [];
+  }
+  territories = [];
 }
 
 function checkPower(player) {
@@ -25,7 +34,9 @@ function checkPower(player) {
 }
 
 function coinFlip() {
-  return Math.floor(Math.random() * 2);
+  if (Math.floor(Math.random() * 2) == 0)
+    return true;
+  return false;
 }
 
 const checkTerritories = (arr, val) => {
@@ -49,3 +60,5 @@ const nearestSquare = (clicked, base) => {
 }
 
 module.exports.captureTerritory = captureTerritory;
+module.exports.selectTerritory = selectTerritory;
+module.exports.attack = attack;

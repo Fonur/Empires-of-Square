@@ -5,12 +5,13 @@ var io = require('socket.io')(server);
 const path = require('path');
 
 const { player } = require('./utils/players');
-const { captureTerritory } = require('./utils/capture');
+const { captureTerritory, selectTerritory, attack} = require('./utils/capture');
 
 var connects = [];
 var randomColor = require('randomcolor');
 var p = [];
 var started = false;
+var countPlayer = 0;
 
 const publicPath = path.join(__dirname, '../public');
 
@@ -27,23 +28,24 @@ io.on('connection', function (socket) {
       if (socket.id === s.id) {
         continue;
       }
-      io.emit('loadOtherPlayers', p[s.id]);
+      loadOtherPlayers();
     } 
   });
 
+  const loadOtherPlayers = () => {
+    var players = [];
+    for (var i in io.sockets.connected) {
+      var s = io.sockets.connected[i];
+      connects[countPlayer] = s.id;
+      countPlayer++; 
+      players.push(p[s.id]);                           
+    }
+    socket.emit('loadOtherPlayers', players);
+  }
+
   socket.on('createPlayer', function (name) {
     p[socket.id] = new player(socket.id, name, color);     
-    var countPlayer = 0;
-      for (var i in io.sockets.connected) {
-        var s = io.sockets.connected[i];
-        connects[countPlayer] = s.id;
-        countPlayer++;                
-        if (socket.id === s.id) {
-            continue;
-        }
-        socket.emit('loadOtherPlayers', p[s.id]);
-      }
-
+    loadOtherPlayers();
     if(countPlayer >= 2 && !started) {
       started = true;
       socket.emit('startTime', socket.id);
@@ -57,13 +59,17 @@ io.on('connection', function (socket) {
   });
   
   socket.on('coords', function (clicked) {
-    if(captureTerritory(p[socket.id], clicked)) {
-      io.emit('createCoords', {
-        clicked: clicked,
-        territories: player.territories,
-        color: color
-      });
-    }
+    console.log(p[socket.id].turn);
+    selectTerritory(p[socket.id], clicked);
+  });
+  socket.on('attack', function() {
+    attack(p[socket.id]);
+    console.log(p[socket.id]);  
+    io.emit('createCoords', {
+      territories: p[socket.id].territories,
+      color: p[socket.id].color
+    });
+    loadOtherPlayers();
   });
 });
 

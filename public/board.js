@@ -3,14 +3,19 @@ var firstClicked;
 var socket = io();
 
 socket.on('connect', () => {
-  
+  var attack = document.querySelector('#attack');
   var person = prompt("Please enter your name", "Harry");
 
   socket.emit('createPlayer', {name:person});
 
   arena.addEventListener('click', (e) => {
     var clicked = e.path[0].id;
+    document.getElementById(e.path[0].id).setAttribute('style', `background: #fff`);
     socket.emit('coords', e.path[0].id);
+  });
+  
+  attack.addEventListener('click', () => {
+    socket.emit('attack');    
   });
 });
 
@@ -24,23 +29,27 @@ socket.on('turnTime', function(message) {
 });
 
 socket.on('loadOtherPlayers', function(coords) {
-  console.log(coords);
-  document.querySelector('.arena').innerHTML = '';
+  console.log(coords);  
+  arena.innerHTML = ' ';
   createBoard();
-  var color = coords.color;
-  var coords = coords.territories;  
-  coords.forEach(el => {
-    document.getElementById(el).setAttribute('style', `background: ${color}`);
+  coords.forEach(key => {
+    var color = key.color;
+    var coordsKey = key.territories;  
+    coordsKey.forEach(el => { 
+      document.getElementById(el).setAttribute('style', `background: ${color}`);
+    });
   });
+  
 });
+
 
 socket.on('createCoords', function (coords) {
-  var clicked = coords.clicked;
   var color = coords.color;
   var coords = coords.territories;
-  document.getElementById(clicked).setAttribute('style', `background: ${color}`);  
+  coords.forEach(el => {
+    document.getElementById(el).setAttribute('style', `background: ${color}`);  
+  });
 });
-
 
 const createBoard = () => {
   for (var i = 0; i < 8; i++) {
