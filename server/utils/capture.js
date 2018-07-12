@@ -7,6 +7,15 @@ function captureTerritory(player) {
 }
 
 function selectTerritory(player, clicked) { 
+  var beforeClick = false;
+  player.territories.forEach(el => {
+    console.log(typeof el);
+    console.log(typeof clicked);
+    
+    if(el === clicked) {
+      beforeClick = true;
+    }
+  });
   if (checkPower(player) && !beforeClick) {
     if (territories.length < 1 && player.turn === true) {
       territories.push(clicked);
