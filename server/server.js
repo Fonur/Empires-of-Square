@@ -57,7 +57,6 @@ io.on('connection', function (socket) {
     }
   });
 
-
   socket.on('turnToOther', function (socketId) {
     if (started)
       turnTime(socketId);
@@ -69,16 +68,20 @@ io.on('connection', function (socket) {
   });
 
   socket.on('pass', function() {
-    remainTime = -1;
+    if (p[socket.id].turn) {
+      remainTime = -1;
+    }
   });
+
   socket.on('attack', function() {
-    attack(p[socket.id], round);
-    remainTime = -1;
-    io.emit('createCoords', {
-      territories: p[socket.id].territories,
-      color: p[socket.id].color
-    });
-    loadOtherPlayers();
+    if (p[scoket.id].turn) {
+      attack(p[socket.id], round);
+      remainTime = -1; // pass turn
+      io.emit('createCoords', {
+        territories: p[socket.id].territories,
+        color: p[socket.id].color
+      });
+    }
   });
 });
 
