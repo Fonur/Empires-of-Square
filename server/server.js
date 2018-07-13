@@ -12,6 +12,8 @@ var randomColor = require('randomcolor');
 var p = [];
 var started = false;
 var countPlayer = 0;
+var turnMachine;
+var remainTime;
 
 const publicPath = path.join(__dirname, '../public');
 
@@ -34,6 +36,7 @@ io.on('connection', function (socket) {
 
   const loadOtherPlayers = () => {
     var players = [];
+    countPlayer = 0;
     for (var i in io.sockets.connected) {
       var s = io.sockets.connected[i];
       connects[countPlayer] = s.id;
@@ -46,7 +49,7 @@ io.on('connection', function (socket) {
   socket.on('createPlayer', function (name) {
     p[socket.id] = new player(socket.id, name, color);     
     loadOtherPlayers();
-    if(countPlayer >= 2 && !started) {
+    if(countPlayer === 2 && !started) {
       started = true;
       socket.emit('startTime', socket.id);
       console.log(`${socket.id}'s time started`);
@@ -62,6 +65,7 @@ io.on('connection', function (socket) {
     console.log(p[socket.id].turn);
     selectTerritory(p[socket.id], clicked);
   });
+
   socket.on('attack', function() {
     attack(p[socket.id]);
     console.log(p[socket.id]);  
@@ -71,34 +75,40 @@ io.on('connection', function (socket) {
     });
     loadOtherPlayers();
   });
+
+  socket.on('pass', function() {
+    remainTime = -1;
+  });
 });
 
 
+
 const turnTime = (socketId) => {
-    var remainTime = 30;
-    setInterval(() => {
-      io.emit('turnTime', `${Object.values(p[socketId].name)}'s turn. ${remainTime}`);
-      remainTime--;
+  p[socketId].turn = true;
+  remainTime = 30;
+    turnMachine = setInterval(() => {
       if (remainTime < 1)
-      {        
+      {
         var nextId = connects[getNextPlayer(socketId)];
         playerRound(nextId);
         socketId = nextId;
         p[socketId].capture = 0;
         remainTime = 30;
       }
+      io.emit('turnTime', `${Object.values(p[socketId].name)}'s turn. ${remainTime}`);
+      remainTime--;
     }, 1000);
 }
 
-  const playerRound = (socketId) => {
-    connects.forEach(el => {
-      if (el === socketId) {
-        p[el].turn = true;        
-      } else {
-      p[el].turn = false;     
-      }
-    });
-  }
+const playerRound = (socketId) => {
+  connects.forEach(el => {
+    if (el === socketId) {
+      p[el].turn = true;        
+    } else {
+    p[el].turn = false;     
+    }
+  });
+}
 
 
 const getNextPlayer = (socketId) => {

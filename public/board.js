@@ -4,6 +4,7 @@ var socket = io();
 
 socket.on('connect', () => {
   var attack = document.querySelector('#attack');
+  var pass = document.querySelector('#pass');
   var person = prompt("Please enter your name", "Harry");
 
   socket.emit('createPlayer', {name:person});
@@ -14,6 +15,10 @@ socket.on('connect', () => {
     socket.emit('coords', e.path[0].id);
   });
   
+  pass.addEventListener('click', () => {
+    socket.emit('pass');
+  });
+
   attack.addEventListener('click', () => {
     socket.emit('attack');    
   });
