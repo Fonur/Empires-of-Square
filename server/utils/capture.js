@@ -1,9 +1,11 @@
 var territories = [];
 
-function captureTerritory(player) {
-  territories.forEach(territory => {
-    player.territories.push(territory);
-  });
+function failCapture(player) {
+  for (var i = 0; player.capture > i; i++) 
+  {
+    player.territories.pop();          
+  }
+  territories = [];
 }
 
 function selectTerritory(player, clicked) { 
@@ -15,22 +17,26 @@ function selectTerritory(player, clicked) {
   });
   
   if (checkPower(player) && !beforeClick) {
-    if (territories.length < 1 && player.turn === true) {
+    if (player.territories.length < 1) {
       territories.push(clicked);
       player.capture++;
-    } else if (nearestSquare(clicked, player.territories) && checkTerritories(player.territories, clicked) && player.turn === true) {
+      player.territories.push(clicked);
+    } else if (nearestSquare(clicked, player.territories) && player.turn === true) {
       territories.push(clicked);
+      player.territories.push(clicked);
       player.capture++;
     }
   }
 }
 
 function attack(player) {
+  console.log(player);
   if (coinFlip()) {
-    captureTerritory(player, territories);
-    territories = [];
-  }
+    failCapture(player, territories);
+  } else { 
+  player.power += territories.length;
   territories = [];
+  }
 }
 
 function checkPower(player) {
@@ -44,10 +50,6 @@ function coinFlip() {
   if (Math.floor(Math.random() * 2) == 0)
     return true;
   return false;
-}
-
-const checkTerritories = (arr, val) => {
-  return arr.indexOf(val) === -1
 }
 
 const nearestSquare = (clicked, base) => {
@@ -66,6 +68,6 @@ const nearestSquare = (clicked, base) => {
   }
 }
 
-module.exports.captureTerritory = captureTerritory;
+module.exports.captureTerritory = failCapture;
 module.exports.selectTerritory = selectTerritory;
 module.exports.attack = attack;
