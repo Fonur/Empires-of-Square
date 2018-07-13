@@ -14,6 +14,7 @@ var started = false;
 var countPlayer = 0;
 var turnMachine;
 var remainTime;
+var round = 0;
 
 const publicPath = path.join(__dirname, '../public');
 
@@ -65,11 +66,12 @@ io.on('connection', function (socket) {
     console.log(p[socket.id].turn);
     selectTerritory(p[socket.id], clicked);
   });
+
   socket.on('pass', function() {
     remainTime = -1;
   });
   socket.on('attack', function() {
-    attack(p[socket.id]);
+    attack(p[socket.id], round);
     remainTime = -1;
     io.emit('createCoords', {
       territories: p[socket.id].territories,
@@ -90,6 +92,7 @@ const turnTime = (socketId) => {
         socketId = nextId;
         p[socketId].capture = 0;
         remainTime = 30;
+        round++;
       }
       io.emit('turnTime', `${Object.values(p[socketId].name)}'s turn. ${remainTime}`);
       remainTime--;

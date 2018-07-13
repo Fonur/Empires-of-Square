@@ -29,12 +29,16 @@ function selectTerritory(player, clicked) {
   }
 }
 
-function attack(player) {
+function attack(player, round) {
   console.log(player);
-  if (coinFlip()) {
+  if (2 >= round / 2) {
+    player.power = player.territories.length;
+    territories = [];
+  }
+  else if (coinFlip()) {
     failCapture(player, territories);
   } else { 
-  player.power += territories.length;
+  player.power = player.territories.length;
   territories = [];
   }
 }
