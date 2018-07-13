@@ -57,6 +57,7 @@ io.on('connection', function (socket) {
     }
   });
 
+
   socket.on('turnToOther', function (socketId) {
     if (started)
       turnTime(socketId);
