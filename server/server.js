@@ -3,6 +3,7 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 const path = require('path');
+var port = process.env.PORT || 3000;
 
 const { player } = require('./utils/players');
 const { beforeClick, failCapture, selectTerritory, removeTerritory, attack} = require('./utils/capture');
@@ -65,10 +66,12 @@ io.on('connection', function (socket) {
   
   socket.on('coords', function (clicked) {
     console.log(p[socket.id].turn);
-    if (!beforeClick(p[socket.id], clicked)) {
-      selectTerritory(p, p[socket.id], clicked);
-    } else {
-      removeTerritory(p[socket.id], clicked);
+    if (p[socket.id].turn) {
+      if (!beforeClick(p[socket.id], clicked)) {
+        selectTerritory(p, p[socket.id], clicked);
+      } else {
+        removeTerritory(p[socket.id], clicked);
+      }
     }
   });
 
@@ -81,13 +84,14 @@ io.on('connection', function (socket) {
   socket.on('attack', function() {
     if (p[socket.id].turn) {
       attack(p[socket.id], round);
+      round++;
       remainTime = -1; // pass turn
       io.emit('createCoords', {
         territories: p[socket.id].territories,
         color: p[socket.id].color
       });
+      loadOtherPlayers();
     }
-    loadOtherPlayers();
   });
 });
 
@@ -129,4 +133,4 @@ const getNextPlayer = (socketId) => {
   return dondur;
 }
 
-server.listen(3000);
+server.listen(port);

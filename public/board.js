@@ -62,7 +62,7 @@ socket.on('loadOtherPlayers', function(coords) {
       if (el.id === socket.id) {        
         power.value = el.power;
       }
-      document.getElementById(el).setAttribute('style', `background: ${color}`);
+      document.getElementById(el).setAttribute('style', `background: ${color}`);      
     });
   });  
 });

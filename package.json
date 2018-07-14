@@ -4,6 +4,7 @@
   "description": "",
   "main": "board.js",
   "scripts": {
+    "start": "node server/server.js",
     "test": "mocha server/**/*.test.js"
   },
   "author": "",
