@@ -8,15 +8,18 @@ function failCapture(player) {
   territories = [];
 }
 
-function selectTerritory(player, clicked) { 
-  var beforeClick = false;
+function beforeClick(player, clicked) {
+  var durum = false;
   player.territories.forEach(el => {        
     if(el === clicked) {
-      beforeClick = true;
+      durum = true;
     }
   });
-  
-  if (checkPower(player) && !beforeClick) {
+  return durum;
+}
+
+function selectTerritory(player, clicked) { 
+  if (checkPower(player) && !beforeClick(player, clicked) && player.turn == true) {
     if (player.territories.length < 1) {
       territories.push(clicked);
       player.capture++;
@@ -27,6 +30,13 @@ function selectTerritory(player, clicked) {
       player.capture++;
     }
   }
+}
+
+function removeTerritory(player, clicked) {
+  var index = territories.indexOf(clicked);
+  player.territories.splice(index, 1);
+  territories.splice(index, 1);
+  player.capture--;
 }
 
 function attack(player, round) {
@@ -75,3 +85,5 @@ const nearestSquare = (clicked, base) => {
 module.exports.captureTerritory = failCapture;
 module.exports.selectTerritory = selectTerritory;
 module.exports.attack = attack;
+module.exports.beforeClick = beforeClick;
+module.exports.removeTerritory = removeTerritory;

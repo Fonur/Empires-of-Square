@@ -17,10 +17,18 @@ socket.on('connect', () => {
   arena.addEventListener('click', (e) => {
     var clicked = e.path[0].id;
     var capture = document.getElementById('territory');
-
-    document.getElementById(e.path[0].id).setAttribute('style', `background: #fff`);
-    capture.value = ++selected;
-    socket.emit('coords', e.path[0].id);
+    var colorSquare = document.getElementById(clicked).style.background;
+    console.log(colorSquare);
+    
+    if (colorSquare === 'rgb(255, 255, 255)') {
+      document.getElementById(clicked).setAttribute('style', `background: rgb(230, 198, 111);`);
+      capture.value = --selected;
+    } else {
+      document.getElementById(clicked).setAttribute('style', `background: #fff`);
+      capture.value = ++selected;
+    }
+    
+    socket.emit('coords', clicked);
   });
   
   attack.addEventListener('click', () => {

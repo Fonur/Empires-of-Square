@@ -5,7 +5,8 @@ var io = require('socket.io')(server);
 const path = require('path');
 
 const { player } = require('./utils/players');
-const { failCapture, selectTerritory, attack} = require('./utils/capture');
+const { beforeClick, failCapture, selectTerritory, removeTerritory, attack} = require('./utils/capture');
+
 
 var connects = [];
 var randomColor = require('randomcolor');
@@ -64,7 +65,11 @@ io.on('connection', function (socket) {
   
   socket.on('coords', function (clicked) {
     console.log(p[socket.id].turn);
-    selectTerritory(p[socket.id], clicked);
+    if (!beforeClick(p[socket.id], clicked)) {
+      selectTerritory(p[socket.id], clicked);
+    } else {
+      removeTerritory(p[socket.id], clicked);
+    }
   });
 
   socket.on('pass', function() {
@@ -74,7 +79,7 @@ io.on('connection', function (socket) {
   });
 
   socket.on('attack', function() {
-    if (p[scoket.id].turn) {
+    if (p[socket.id].turn) {
       attack(p[socket.id], round);
       remainTime = -1; // pass turn
       io.emit('createCoords', {
@@ -82,6 +87,7 @@ io.on('connection', function (socket) {
         color: p[socket.id].color
       });
     }
+    loadOtherPlayers();
   });
 });
 
