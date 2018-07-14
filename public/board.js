@@ -6,7 +6,10 @@ var selected = 0;
 socket.on('connect', () => {
   var attack = document.querySelector('#attack');
   var person = prompt("Please enter your name", "Harry");
+  var kisiler = document.querySelector('.kisiler');
   var pass = document.querySelector('#pass');
+
+  kisiler.innerHTML = `<h1><span class="badge badge-secondary">${person}</span></h1> `;
 
   socket.emit('createPlayer', {name:person});
 

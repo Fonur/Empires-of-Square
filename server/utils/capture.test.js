@@ -1,28 +1,41 @@
-const {removeTerritory, selectTerritory} = require('./capture');
+const {removeTerritory, selectTerritory, attack, capturedTerritory} = require('./capture');
 const expect = require('expect');
 
-var player = {
-  id: '9_rqAZagSQBPg4_pAAAB',
-  name: { name: 'Fikret' },
-  color: '#fc8d44',
-  territories: [ '06', '05'],
-  power: 9,
-  turn: true,
-  capture: 9 
-}
+var player = [];
 
-describe('Capture test', () => {
-  it('should remove territory from player s ', () => {
-    var clicked = '06';
-    removeTerritory(player, clicked);
-    expect(player.territories).toEqual(expect.not.arrayContaining(['06']));
-    expect(player.territories).toEqual(expect.arrayContaining(['05']));
-    expect(player.territories.length).toBe(1);
-    })
-  it('should add only 06', () => {    
+beforeEach(function() {
+  player[0] = {
+    id: '9_rqAZagSQBPg4_pAAAB',
+    name: { name: 'Fikret' },
+    color: '#fc8d44',
+    territories: ['14', '13'],
+    power: 9,
+    turn: true,
+    capture: 9 
+  };
+  player[1] = {
+    id: '9_rqAZagSQBPg4_pasAB',
+    name: { name: 'Fikret' },
+    color: '#fc8d44',
+    territories: ['23', '24'],
+    power: 9,
+    turn: true,
+    capture: 9 
+  };
+});
+
+describe('Capture test', () => {  
+  it('should capture other player\'s territory when attacked', () => {
+    selectTerritory(player, player[0], '24');
+    expect(player[0].territories).toEqual(expect.arrayContaining(['14', '13', '24']));
+    expect(player[1].territories).toEqual(expect.not.arrayContaining(['24']));
+  });
+
+  // it('Remove it from other players', () => {
+  //   capturedTerritory(player, '06');
+  //   expect(player[0].territories).toEqual(expect.not.arrayContaining(['06']));
+  //   expect(player[1].territories).toEqual(expect.not.arrayContaining(['06']));
+  //   expect(player[1].power).toBe(8);
     
-    var add = '04';  
-    selectTerritory(player, add);
-    expect(player.territories).toEqual(expect.arrayContaining(['05', '04']));
-  });
-  });
+  // });
+});

@@ -18,7 +18,9 @@ function beforeClick(player, clicked) {
   return durum;
 }
 
-function selectTerritory(player, clicked) { 
+function selectTerritory(players, player, clicked) { 
+  capturedTerritory(players, clicked);
+  
   if (checkPower(player) && !beforeClick(player, clicked) && player.turn == true) {
     if (player.territories.length < 1) {
       territories.push(clicked);
@@ -41,7 +43,7 @@ function removeTerritory(player, clicked) {
 
 function attack(player, round) {
   console.log(player);
-  if (2 >= round / 2) {
+  if (2 >= round / 2) {    
     player.power = player.territories.length;
     territories = [];
   }
@@ -50,6 +52,18 @@ function attack(player, round) {
   } else { 
   player.power = player.territories.length;
   territories = [];
+  }
+}
+
+function capturedTerritory(players, clicked) {
+  for (var player in players) {
+    players[player].territories.forEach((territory, i) => {
+      if (territory === clicked)
+      {
+        players[player].territories.splice(i, 1);
+        players[player].power--;
+      }
+    });
   }
 }
 
@@ -87,3 +101,4 @@ module.exports.selectTerritory = selectTerritory;
 module.exports.attack = attack;
 module.exports.beforeClick = beforeClick;
 module.exports.removeTerritory = removeTerritory;
+module.exports.capturedTerritory = capturedTerritory;

@@ -47,7 +47,7 @@ io.on('connection', function (socket) {
     }
     socket.emit('loadOtherPlayers', players);
   }
-
+  
   socket.on('createPlayer', function (name) {
     p[socket.id] = new player(socket.id, name, color);     
     loadOtherPlayers();
@@ -66,7 +66,7 @@ io.on('connection', function (socket) {
   socket.on('coords', function (clicked) {
     console.log(p[socket.id].turn);
     if (!beforeClick(p[socket.id], clicked)) {
-      selectTerritory(p[socket.id], clicked);
+      selectTerritory(p, p[socket.id], clicked);
     } else {
       removeTerritory(p[socket.id], clicked);
     }
@@ -104,7 +104,7 @@ const turnTime = (socketId) => {
         remainTime = 30;
         round++;
       }
-      io.emit('turnTime', `${Object.values(p[socketId].name)}'s turn. ${remainTime}`);
+      io.emit('turnTime', `${Object.values(p[socketId].name)}'s turn. ${remainTime}`);      
       remainTime--;
     }, 1000);
 }
