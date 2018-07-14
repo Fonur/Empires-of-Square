@@ -2,14 +2,13 @@ var arena = document.querySelector('.arena');
 var firstClicked;
 var socket = io();
 var selected = 0;
+var person;
+var power;
 
 socket.on('connect', () => {
   var attack = document.querySelector('#attack');
-  var person = prompt("Please enter your name", "Harry");
-  var kisiler = document.querySelector('.kisiler');
+  person = prompt("Please enter your name", "Harry");  
   var pass = document.querySelector('#pass');
-
-  kisiler.innerHTML = `<h1><span class="badge badge-secondary">${person}</span></h1> `;
 
   socket.emit('createPlayer', {name:person});
 
@@ -20,15 +19,16 @@ socket.on('connect', () => {
   arena.addEventListener('click', (e) => {
     var clicked = e.path[0].id;
     var capture = document.getElementById('territory');
+    power = document.getElementById('power');
     var colorSquare = document.getElementById(clicked).style.background;
     console.log(colorSquare);
     
     if (colorSquare === 'rgb(255, 255, 255)') {
       document.getElementById(clicked).setAttribute('style', `background: rgb(230, 198, 111);`);
-      capture.value = --selected;
+      capture.innerText = --selected;
     } else {
       document.getElementById(clicked).setAttribute('style', `background: #fff`);
-      capture.value = ++selected;
+      capture.innerText = ++selected;
     }
     
     socket.emit('coords', clicked);
@@ -49,13 +49,22 @@ socket.on('turnTime', function(message) {
 });
 
 socket.on('loadOtherPlayers', function(coords) {
+  var kisiler = document.querySelector('.kisiler');
+  kisiler.innerHTML = ' ';
   var power = document.getElementById('power');
-  selected = 0;
-  
+  selected = 0;  
   console.log(coords);  
   arena.innerHTML = ' ';
   createBoard();
   coords.forEach(key => {
+    var personName = Object.values(key.name)[0]; 
+    console.log(personName);  
+    if (personName === person) {
+      kisiler.insertAdjacentHTML('beforeend',`<h4><span style="background: ${key.color}; color:#fff">${Object.values(key.name)}</span>  </h4><hr width="250px;">`);
+      power.innerText = key.power;
+    } else {
+      kisiler.insertAdjacentHTML('beforeend',`<h4>${Object.values(key.name)}</h4><hr width="250px;">`);
+    }
     var color = key.color;
     var coordsKey = key.territories;  
     coordsKey.forEach(el => { 
@@ -76,10 +85,10 @@ socket.on('createCoords', function (coords) {
 });
 
 const createBoard = () => {
-  for (var i = 0; i < 8; i++) {
+  for (var i = 0; i < 16; i++) {
     var tr = document.createElement('tr');
     arena.insertAdjacentElement('beforeend', tr);
-    for (var j = 0; j < 8; j++) {
+    for (var j = 0; j < 16; j++) {
       var td = document.createElement('td');
       td.setAttribute("id", `${i}${j}`);
       tr.insertAdjacentElement('beforeend', td);

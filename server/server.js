@@ -38,7 +38,8 @@ io.on('connection', function (socket) {
   });
 
   const loadOtherPlayers = () => {
-    var players = [];
+    var players = [], currentPlayer;
+    currentPlayer = p[socket.id];
     countPlayer = 0;
     for (var i in io.sockets.connected) {
       var s = io.sockets.connected[i];
@@ -46,7 +47,7 @@ io.on('connection', function (socket) {
       countPlayer++; 
       players.push(p[s.id]);                           
     }
-    socket.emit('loadOtherPlayers', players);
+    io.emit('loadOtherPlayers', players);
   }
   
   socket.on('createPlayer', function (name) {
@@ -108,7 +109,7 @@ const turnTime = (socketId) => {
         remainTime = 30;
         round++;
       }
-      io.emit('turnTime', `${Object.values(p[socketId].name)}'s turn. ${remainTime}`);      
+      io.emit('turnTime', `${Object.values(p[socketId].name)}'s turn. ${remainTime}`);
       remainTime--;
     }, 1000);
 }
