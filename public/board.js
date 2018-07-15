@@ -7,10 +7,15 @@ var power;
 
 socket.on('connect', () => {
   var attack = document.querySelector('#attack');
-  person = prompt("Please enter your name", "Harry");  
   var pass = document.querySelector('#pass');
 
-  socket.emit('createPlayer', {name:person});
+  var room;
+  var playerCount;
+  
+  person = $.deparam(window.location.search).name;
+  room = $.deparam(window.location.search).room;
+  playerCount = $.deparam(window.location.search).playerCount;
+  socket.emit('createPlayer', {name:person}, room, playerCount);
 
   pass.addEventListener('click', () => {
     socket.emit('pass');
