@@ -55,8 +55,8 @@ socket.on('turnTime', function(message) {
 
 socket.on('loadOtherPlayers', function(coords) {
   var kisiler = document.querySelector('.kisiler');
+  var power = document.getElementById('power'); 
   kisiler.innerHTML = ' ';
-  var power = document.getElementById('power');
   selected = 0;  
   console.log(coords);  
   arena.innerHTML = ' ';
@@ -88,17 +88,5 @@ socket.on('createCoords', function (coords) {
     document.getElementById(el).setAttribute('style', `background: ${color}`);  
   });
 });
-
-const createBoard = () => {
-  for (var i = 0; i < 16; i++) {
-    var tr = document.createElement('tr');
-    arena.insertAdjacentElement('beforeend', tr);
-    for (var j = 0; j < 16; j++) {
-      var td = document.createElement('td');
-      td.setAttribute("id", `${i}${j}`);
-      tr.insertAdjacentElement('beforeend', td);
-    }
-  }
-}
 
 createBoard();

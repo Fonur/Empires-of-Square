@@ -30,12 +30,4 @@ describe('Capture test', () => {
     expect(player[0].territories).toEqual(expect.arrayContaining(['14', '13', '24']));
     expect(player[1].territories).toEqual(expect.not.arrayContaining(['24']));
   });
-
-  // it('Remove it from other players', () => {
-  //   capturedTerritory(player, '06');
-  //   expect(player[0].territories).toEqual(expect.not.arrayContaining(['06']));
-  //   expect(player[1].territories).toEqual(expect.not.arrayContaining(['06']));
-  //   expect(player[1].power).toBe(8);
-    
-  // });
 });

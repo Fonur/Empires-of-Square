@@ -79,7 +79,7 @@ io.on('connection', function (socket) {
     console.log(p[socket.id].turn);
     if (p[socket.id].turn) {
       if (!beforeClick(p[socket.id], clicked)) {
-        selectTerritory(p, p[socket.id], clicked);
+        selectTerritory(p, p[socket.id], clicked, round);
       } else {
         removeTerritory(p[socket.id], clicked);
       }
@@ -121,8 +121,7 @@ const turnTime = (socketId) => {
         playerRound(nextId);
         socketId = nextId;
         p[socketId].capture = 0;
-        remainTime = 30;
-        round++;
+        remainTime = 30;        
       }
       io.to(room).emit('turnTime', `${Object.values(p[socketId].name)}'s turn. ${remainTime}`);
       remainTime--;

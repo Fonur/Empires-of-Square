@@ -15,30 +15,36 @@
 
 <body>
   <div class="container">
-    <div class="col-md-4 ml-auto mr-auto mt-5">
-      <div class="card">
-        <div class="card-body">
-          <h4 class="card-title">Empires Of Square</h4>
-          <p class="card-text">
-            <form action="board.html">
-            <label for="name">Name:</label>
-            <input type="text" name="name" id="name" class="form-control" placeholder="Daenerys">
-            <label class="mt-2" for="room">Room:</label>
-            <input type="text" name="room" id="room" class="form-control" placeholder="Westeros">  
-            
-              <label for="playerCount">Player Count</label>
-              <select class="form-control" name="playerCount" id="playerCount">
-                <option id="2">2 Player</option>
-                <option id="3">3 Player</option>
-                <option id="4">4 Player</option>
-              </select>
-            </div>
-            <button type="submit" class="btn btn-danger">Dracarys</button>
-            
+    <center>
+      <h2 class="mt-5">EMPIRES OF SQUARES</h2>
+    </center>
+    <div class="row">
+      <div class="col-md-4 mr-auto ml-auto mt-5">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Create/Connect a Game</h4>
+            <p class="card-text">
+              <form action="board.html">
+                <label for="name">Name:</label>
+                <input type="text" name="name" id="name" class="form-control" placeholder="Daenerys">
+                <label class="mt-2" for="room">Room:</label>
+                <input type="text" name="room" id="room" class="form-control" placeholder="Westeros">
+
+                <label for="playerCount">Player Count</label>
+                <select class="form-control" name="playerCount" id="playerCount">
+                  <option id="2">2 Player</option>
+                  <option id="3">3 Player</option>
+                  <option id="4">4 Player</option>
+                </select>
+          </div>
+          <button type="submit" class="btn btn-danger">Create</button>
           </p>
         </div>
+      </div>
+
     </div>
-    </div>
+  </div>
+  </div>
   </div>
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->

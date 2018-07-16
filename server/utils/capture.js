@@ -1,3 +1,4 @@
+
 var territories = [];
 
 function failCapture(player) {
@@ -10,7 +11,7 @@ function failCapture(player) {
 
 function beforeClick(player, clicked) {
   var durum = false;
-  player.territories.forEach(el => {        
+  player.territories.forEach(el => {
     if(el === clicked) {
       durum = true;
     }
@@ -18,15 +19,22 @@ function beforeClick(player, clicked) {
   return durum;
 }
 
-function selectTerritory(players, player, clicked) { 
-  capturedTerritory(players, clicked);
+function selectTerritory(players, player, clicked, round) { 
+  var captured = true;
+
+  if (round <= 2)
+  {
+    captured = checkCaptured(players, clicked);        
+  } else {
+    capturedTerritory(players, clicked);
+  }
   
   if (checkPower(player) && !beforeClick(player, clicked) && player.turn == true) {
-    if (player.territories.length < 1) {
+    if (player.territories.length < 1 && !captured) {
       territories.push(clicked);
       player.capture++;
       player.territories.push(clicked);
-    } else if (nearestSquare(clicked, player.territories) && player.turn === true) {
+    } else if (nearestSquare(clicked, player.territories) && player.turn === true && !captured) {
       territories.push(clicked);
       player.territories.push(clicked);
       player.capture++;
@@ -43,7 +51,7 @@ function removeTerritory(player, clicked) {
 
 function attack(player, round) {
   console.log(player);
-  if (2 >= round / 2) {    
+  if (2 >= round) {    
     player.power = player.territories.length;
     territories = [];
   }
@@ -65,6 +73,19 @@ function capturedTerritory(players, clicked) {
       }
     });
   }
+}
+
+function checkCaptured(players, clicked) {
+  var check = false;
+  for (var player in players) {
+    players[player].territories.forEach((territory, i) => {
+      if (territory === clicked)
+      {
+        check = true;
+      }
+    });
+  }
+  return check
 }
 
 function checkPower(player) {
