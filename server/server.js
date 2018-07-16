@@ -6,6 +6,7 @@ const path = require('path');
 var port = process.env.PORT || 3000;
 
 const { player } = require('./utils/players');
+const { selectRandom } = require('./utils/startRandom');
 const { beforeClick, failCapture, selectTerritory, removeTerritory, attack} = require('./utils/capture');
 
 var connects = [];
@@ -58,7 +59,8 @@ io.on('connection', function (socket) {
     
     socket.join(room);
     p[socket.id] = new player(socket.id, name, color, room);
-    console.log(room);    
+    p[socket.id].territories = selectRandom();
+    console.log(p[socket.id]);    
     loadOtherPlayers();
     started[room] = false;
     console.log(countPlayer);

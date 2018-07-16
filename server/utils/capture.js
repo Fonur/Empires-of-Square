@@ -20,27 +20,22 @@ function beforeClick(player, clicked) {
 }
 
 function selectTerritory(players, player, clicked, round) { 
-  var captured = true;
-
-  if (round <= 2)
-  {
-    captured = checkCaptured(players, clicked);        
-  } else {
-    capturedTerritory(players, clicked);
-  }
+  capturedTerritory(players, clicked);
+  
   
   if (checkPower(player) && !beforeClick(player, clicked) && player.turn == true) {
-    if (player.territories.length < 1 && !captured) {
+    if (player.territories.length < 1) {
       territories.push(clicked);
       player.capture++;
       player.territories.push(clicked);
-    } else if (nearestSquare(clicked, player.territories) && player.turn === true && !captured) {
+    } else if (nearestSquare(clicked, player.territories) && player.turn === true) {
       territories.push(clicked);
       player.territories.push(clicked);
       player.capture++;
     }
   }
 }
+
 
 function removeTerritory(player, clicked) {
   var index = territories.indexOf(clicked);
@@ -73,19 +68,6 @@ function capturedTerritory(players, clicked) {
       }
     });
   }
-}
-
-function checkCaptured(players, clicked) {
-  var check = false;
-  for (var player in players) {
-    players[player].territories.forEach((territory, i) => {
-      if (territory === clicked)
-      {
-        check = true;
-      }
-    });
-  }
-  return check
 }
 
 function checkPower(player) {

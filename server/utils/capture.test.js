@@ -24,10 +24,5 @@ beforeEach(function() {
   };
 });
 
-describe('Capture test', () => {  
-  it('should capture other player\'s territory when attacked', () => {
-    selectTerritory(player, player[0], '24');
-    expect(player[0].territories).toEqual(expect.arrayContaining(['14', '13', '24']));
-    expect(player[1].territories).toEqual(expect.not.arrayContaining(['24']));
-  });
+describe('Capture test', () => { 
 });
