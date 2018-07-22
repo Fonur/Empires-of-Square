@@ -1,5 +1,3 @@
-
-
 function selectRandom (players){
   var x = Math.floor(Math.random() * 9  + 1);
   var y = Math.floor(Math.random() * 9  + 1);

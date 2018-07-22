@@ -56,14 +56,16 @@ socket.on('turnTime', function(message) {
 socket.on('loadOtherPlayers', function(coords) {
   var kisiler = document.querySelector('.kisiler');
   var power = document.getElementById('power'); 
+
   kisiler.innerHTML = ' ';
   selected = 0;  
   console.log(coords);  
   arena.innerHTML = ' ';
+  
   createBoard();
+
   coords.forEach(key => {
-    var personName = Object.values(key.name)[0]; 
-    console.log(personName);  
+    var personName = Object.values(key.name)[0];     
     if (personName === person) {
       kisiler.insertAdjacentHTML('beforeend',`<h4><span style="background: ${key.color}; color:#fff">${Object.values(key.name)}</span>  </h4><hr width="250px;">`);
       power.innerText = key.power;
