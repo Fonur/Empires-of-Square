@@ -25,13 +25,14 @@ socket.on('connect', () => {
     var clicked = e.path[0].id;
     var capture = document.getElementById('territory');
     power = document.getElementById('power');
-    var colorSquare = document.getElementById(clicked).style.background;
+    var colorSquare = document.getElementById(clicked).style.background;    
+    
     console.log(colorSquare);
     
     if (colorSquare === 'rgb(255, 255, 255)') {
       document.getElementById(clicked).setAttribute('style', `background: rgb(230, 198, 111);`);
       capture.innerText = --selected;
-    } else {
+    } else if(colorSquare === 'rgb(230, 198, 111)') {
       document.getElementById(clicked).setAttribute('style', `background: #fff`);
       capture.innerText = ++selected;
     }

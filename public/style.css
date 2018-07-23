@@ -21,8 +21,7 @@ table {
   box-shadow:         0px 0px 10px 2px rgba(50, 50, 50, 0.4);  
 }
 
-td {
-  background:rgb(230, 198, 111);
+td {  
   height:20px;
   width:20px;
   text-align:center;
