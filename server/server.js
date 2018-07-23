@@ -62,13 +62,9 @@ io.on('connection', function (socket) {
     countPlayer = 0;
     for (var i in io.sockets.connected) {
       if (currentRoom) {
-        if (currentRoom.hasPlayer(p[i])) {   
-          console.log(currentRoom);
-          console.log(p[i]);
-          
+        if (currentRoom.hasPlayer(p[i])) {             
           var s = io.sockets.connected[i];
-          rooms[currentPlayer.room].connects[countPlayer] = s.id;
-          console.log('----', currentRoom.connects);
+          rooms[currentPlayer.room].connects[countPlayer] = s.id;          
           
           countPlayer++;
         }        
@@ -95,8 +91,7 @@ io.on('connection', function (socket) {
 
     if (rooms[roomName].countPlayer === playerCount) {
       rooms[roomName].started = true;
-      socket.emit('startTime', socket.id);
-      console.log(`${socket.id}'s time started`);
+      socket.emit('startTime', socket.id);      
     }
   });
 
@@ -104,8 +99,7 @@ io.on('connection', function (socket) {
       turnTime(socketId);
   });
 
-  socket.on('coords', function (clicked) {
-    console.log(p[socket.id].turn);
+  socket.on('coords', function (clicked) {    
     if (p[socket.id].turn) {
       if (!beforeClick(p[socket.id], clicked)) {
         selectTerritory(p, p[socket.id], clicked, round);
@@ -141,8 +135,7 @@ const getCountPlayer = (playerCount) => {
 }
 
 const turnTime = (socketId) => {
-  var currentRoom = p[socketId].room;  
-  console.log(`${rooms[currentRoom]} connected to room`);
+  var currentRoom = p[socketId].room;    
   p[socketId].turn = true;
   rooms[p[socketId].room].remainTime = 30;
 
@@ -174,12 +167,10 @@ const playerRound = (socketId) => {
 }
 
 const getNextPlayer = (socketId) => {
-  currentRoom = rooms[p[socketId].room];
-  console.log(currentRoom + ' is searching for next user');
+  currentRoom = rooms[p[socketId].room];  
   
   var dondur = 0;
   var playerList = currentRoom.connects;
-  console.log(playerList);
   
   playerList.forEach((el, i) => {
     var nextPlayer = p[playerList[i + 1]];
