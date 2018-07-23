@@ -3,6 +3,7 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 const path = require('path');
+
 var port = process.env.PORT || 3000;
 
 const {
@@ -25,15 +26,14 @@ const {
   room
 } = require('./utils/room');
 
-var connects = [];
 var randomColor = require('randomcolor');
 var p = [];
-var rooms = [];
-var countPlayer = 0;
+var rooms = []; 
+var countPlayer;
 var currentId;
 var turnMachine;
-var remainTime;
 var round = 0;
+var currentRoom;
 
 
 const publicPath = path.join(__dirname, '../public');
@@ -57,18 +57,21 @@ io.on('connection', function (socket) {
   });
 
   const loadOtherPlayers = () => {        
-    currentPlayer = p[socket.id];
-    var currentRoom = rooms[currentPlayer.room];
+    var currentPlayer = p[socket.id];
+    currentRoom = rooms[currentPlayer.room];
     countPlayer = 0;
     for (var i in io.sockets.connected) {
-      if (currentRoom) {  
-        if (currentRoom.hasPlayer(p[i])) {
-          console.log('He ya!');
-               
+      if (currentRoom) {
+        if (currentRoom.hasPlayer(p[i])) {   
+          console.log(currentRoom);
+          console.log(p[i]);
+          
           var s = io.sockets.connected[i];
-          connects[countPlayer] = s.id;
-          countPlayer++;          
-        }
+          rooms[currentPlayer.room].connects[countPlayer] = s.id;
+          console.log('----', currentRoom.connects);
+          
+          countPlayer++;
+        }        
       }
     }
     io.to(currentPlayer.room).emit('loadOtherPlayers', currentRoom.players);
@@ -82,20 +85,22 @@ io.on('connection', function (socket) {
     p[socket.id] = new player(socket.id, name, color, roomName);
     p[socket.id].territories = selectRandom(); 
 
-    rooms[roomName] = new room(roomName, false);
+    if (!rooms[roomName])
+      rooms[roomName] = new room(roomName, false);
+
     rooms[roomName].addPlayerToRoom(p[socket.id]);
+    rooms[roomName].countPlayer++;
 
     loadOtherPlayers();
 
-    if (countPlayer === playerCount && !rooms[room]) {
-      rooms[room] = true;
+    if (rooms[roomName].countPlayer === playerCount) {
+      rooms[roomName].started = true;
       socket.emit('startTime', socket.id);
       console.log(`${socket.id}'s time started`);
     }
   });
 
   socket.on('turnToOther', function (socketId) {
-    if (rooms[p[socketId].room])
       turnTime(socketId);
   });
 
@@ -111,8 +116,9 @@ io.on('connection', function (socket) {
   });
 
   socket.on('pass', function () {
+    
     if (p[socket.id].turn) {
-      remainTime = -1;
+      rooms[p[socket.id].room].remainTime = -1;
     }
   });
 
@@ -120,7 +126,7 @@ io.on('connection', function (socket) {
     if (p[socket.id].turn) {
       attack(p[socket.id], round);
       round++;
-      remainTime = -1; // pass turn
+      rooms[p[socket.id].room].remainTime = -1; // pass turn
       io.to(p[socket.id].room).emit('createCoords', {
         territories: p[socket.id].territories,
         color: p[socket.id].color
@@ -135,26 +141,30 @@ const getCountPlayer = (playerCount) => {
 }
 
 const turnTime = (socketId) => {
-  var currentRoom = p[socketId].room;
-  console.log(`${p[socketId].name} connected to room`);
+  var currentRoom = p[socketId].room;  
+  console.log(`${rooms[currentRoom]} connected to room`);
   p[socketId].turn = true;
-  remainTime = 30;
-  turnMachine = setInterval(() => {
-    if (remainTime < 1) {
-      var nextId = connects[getNextPlayer(socketId)];
+  rooms[p[socketId].room].remainTime = 30;
+
+    setInterval(() => {
+    if (rooms[p[socketId].room].remainTime < 1) {
+      var nextId = rooms[currentRoom].connects[getNextPlayer(socketId)];
       playerRound(nextId);
       socketId = nextId;
       p[socketId].capture = 0;
-      remainTime = 30;
+      rooms[p[socketId].room].remainTime = 30;
     }
-    io.to(currentRoom).emit('turnTime', `${Object.values(p[socketId].name)}'s turn. ${remainTime}`);
-    remainTime--;
-  }, 1000);
+    
+    io.to(currentRoom).emit('turnTime', `${Object.values(p[socketId].name)}'s turn. ${rooms[p[socketId].room].remainTime}`);    
 
+  rooms[p[socketId].room].remainTime--;
+  }, 1000);
 }
 
 const playerRound = (socketId) => {
-  connects.forEach(el => {
+  currentRoom = p[socketId].room;
+
+  rooms[currentRoom].connects.forEach(el => {
     if (el === socketId) {
       p[el].turn = true;
     } else {
@@ -164,10 +174,20 @@ const playerRound = (socketId) => {
 }
 
 const getNextPlayer = (socketId) => {
+  currentRoom = rooms[p[socketId].room];
+  console.log(currentRoom + ' is searching for next user');
+  
   var dondur = 0;
-  connects.forEach((el, i) => {
-    if (el === socketId && i != (connects.length - 1)) {
-      dondur = i + 1;
+  var playerList = currentRoom.connects;
+  console.log(playerList);
+  
+  playerList.forEach((el, i) => {
+    var nextPlayer = p[playerList[i + 1]];
+    if (nextPlayer) {
+      var nextPlayerRoom = rooms[nextPlayer.room];
+      if (el === socketId && i != (playerList.length - 1) && nextPlayerRoom.hasPlayer(p[playerList[i + 1]])) {
+        dondur = i + 1;
+      }
     }
   });
   return dondur;

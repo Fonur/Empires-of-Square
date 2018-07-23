@@ -4,10 +4,13 @@ class room {
     this.started = started;
     this.players = [];
     this.countPlayer = 0;
+    this.connects = [];
+    this.remainTime = 30;
   }
 
   addPlayerToRoom(player) {
     this.players.push(player);
+    this.connects.push(player.id);
   }
 
   hasPlayer(player) {
