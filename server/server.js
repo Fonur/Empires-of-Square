@@ -19,7 +19,8 @@ const {
   failCapture,
   selectTerritory,
   removeTerritory,
-  attack
+  attack,
+  toggleTerritory
 } = require('./utils/capture');
 
 const {
@@ -98,13 +99,9 @@ io.on('connection', function (socket) {
       turnTime(socketId);
   });
 
-  socket.on('coords', function (clicked) {    
+  socket.on('coords', function (clicked) {
     if (p[socket.id].turn) {
-      if (!beforeClick(p[socket.id], clicked)) {
-        selectTerritory(p, p[socket.id], clicked, round);
-      } else {
-        removeTerritory(p[socket.id], clicked);
-      }
+      toggleTerritory(p, p[socket.id], clicked, round);      
     }
   });
 

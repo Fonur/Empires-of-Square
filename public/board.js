@@ -75,7 +75,7 @@ socket.on('loadOtherPlayers', function(coords) {
       kisiler.insertAdjacentHTML('beforeend',`<h4>${Object.values(key.name)}</h4><hr width="250px;">`);
     }
     var color = key.color;
-    var coordsKey = key.territories;  
+    var coordsKey = key.territories;
     coordsKey.forEach(el => { 
       if (el.id === socket.id) {        
         power.value = el.power;
