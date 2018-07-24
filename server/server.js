@@ -35,7 +35,6 @@ var turnMachine;
 var round = 0;
 var currentRoom;
 
-
 const publicPath = path.join(__dirname, '../public');
 
 app.use(express.static(publicPath));
@@ -44,54 +43,54 @@ io.on('connection', function (socket) {
   var color = randomColor();
   currentId = socket.id;
 
-  socket.on('disconnect', (socket) => {
-    p[socket.id] = '';
-    p[socket.id].turn = true;
-    for (var i in io.sockets.connected) {
-      var s = io.sockets.connected[i];
-      if (socket.id === s.id) {
-        continue;
-      }      
+  socket.on('disconnect', (socket) => {    
+    if (p[socket.id]) {
       loadOtherPlayers();
     }
   });
 
   const loadOtherPlayers = () => {        
-    var currentPlayer = p[socket.id];
+    var currentPlayer = p[socket.id];        
     currentRoom = rooms[currentPlayer.room];
+
     countPlayer = 0;
-    for (var i in io.sockets.connected) {
-      if (currentRoom) {
+    if (currentRoom) {
+      for (var i in io.sockets.connected) {      
         if (currentRoom.hasPlayer(p[i])) {             
           var s = io.sockets.connected[i];
           rooms[currentPlayer.room].connects[countPlayer] = s.id;          
           
           countPlayer++;
-        }        
+        }
       }
+      io.to(currentPlayer.room).emit('loadOtherPlayers', currentRoom.players);
     }
-    io.to(currentPlayer.room).emit('loadOtherPlayers', currentRoom.players);
   }
 
   socket.on('createPlayer', function (name, roomName, playerCount) {
-    var playerCount = getCountPlayer(playerCount); 
-
-    socket.join(roomName);
-
-    p[socket.id] = new player(socket.id, name, color, roomName);
-    p[socket.id].territories = selectRandom(); 
+    var playerCount = getCountPlayer(playerCount);
 
     if (!rooms[roomName])
       rooms[roomName] = new room(roomName, false);
 
-    rooms[roomName].addPlayerToRoom(p[socket.id]);
-    rooms[roomName].countPlayer++;
+    if (playerCount > rooms[roomName].countPlayer) {
+      socket.join(roomName);
 
-    loadOtherPlayers();
+      p[socket.id] = new player(socket.id, name, color, roomName);
+      p[socket.id].territories = selectRandom();
 
-    if (rooms[roomName].countPlayer === playerCount) {
-      rooms[roomName].started = true;
-      socket.emit('startTime', socket.id);      
+
+      rooms[roomName].addPlayerToRoom(p[socket.id]);
+      rooms[roomName].countPlayer++;
+
+      loadOtherPlayers();
+
+      if (rooms[roomName].countPlayer === playerCount) {
+        rooms[roomName].started = true;
+        socket.emit('startTime', socket.id);
+      }
+    } else {
+      socket.disconnect();
     }
   });
 
