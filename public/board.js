@@ -26,7 +26,7 @@ socket.on('connect', () => {
     var capture = document.getElementById('territory');
     power = document.getElementById('power');
     var colorSquare = document.getElementById(clicked).style.background;    
-    
+
     console.log(colorSquare);
     
     if (colorSquare === 'rgb(255, 255, 255)') {
@@ -43,6 +43,7 @@ socket.on('connect', () => {
   attack.addEventListener('click', () => {
     socket.emit('attack');    
   });
+
 });
 
 socket.on('startTime', function(socketId) {
@@ -82,6 +83,8 @@ socket.on('loadOtherPlayers', function(coords) {
       document.getElementById(el).setAttribute('style', `background: ${color}`);      
     });
   });  
+
+  history.replaceState({}, null, "/"); //Remove params
 });
 
 socket.on('createCoords', function (coords) {
