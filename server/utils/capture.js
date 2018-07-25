@@ -1,22 +1,26 @@
-
 var territories = [];
 
 function failCapture(player) {
-  for (var i = 0; player.capture > i; i++) 
-  {
-    player.territories.pop();          
-  }
+  territories.forEach(el => {
+    removeTerritory(player, el);
+  });
+
   territories = [];
 }
 
-function beforeClick(player, clicked) {
-  var durum = false;
-  player.territories.forEach(el => {
-    if(el === clicked) {
-      durum = true;
+function beforeClick(player, clicked) {  
+  var i = 0;
+
+  for (var territory in player.territories) {
+    if(player.territories[territory] === clicked) {
+      return true;
     }
-  });
-  return durum;
+    
+    if (i === player.territories.length)
+      return false;
+    i++;
+  }
+  
 }
 
 function selectTerritory(players, player, clicked, round) { 
@@ -37,10 +41,16 @@ function selectTerritory(players, player, clicked, round) {
 
 
 function removeTerritory(player, clicked) {
-  var index = territories.indexOf(clicked) - 1;
-  player.territories.splice(index, 1);
-  territories.splice(index, 1);
-  player.capture--;
+  var index = territories.indexOf(clicked);
+  if (index > -1) {    
+    territories.splice(index, 1);
+    player.capture--;   
+    
+    index = player.territories.indexOf(clicked);
+    if (index > -1)
+      player.territories.splice(index, 1);
+  }
+  
 }
 
 function attack(player, round) {
@@ -56,7 +66,7 @@ function attack(player, round) {
   territories = [];
   }
 }
-
+ 
 function capturedTerritory(players, clicked) {
   for (var player in players) {
     players[player].territories.forEach((territory, i) => {
@@ -112,3 +122,4 @@ module.exports.beforeClick = beforeClick;
 module.exports.removeTerritory = removeTerritory;
 module.exports.capturedTerritory = capturedTerritory;
 module.exports.toggleTerritory = toggleTerritory;
+module.exports.failCapture = failCapture;
