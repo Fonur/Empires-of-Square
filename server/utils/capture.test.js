@@ -55,5 +55,4 @@ describe('Capture tests', () => {
     failCapture(player[0]);
     expect(player[0].territories).toEqual(expect.arrayContaining(['02']));
   });
-  
 });

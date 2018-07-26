@@ -69,12 +69,13 @@ io.on('connection', function (socket) {
   }
 
   socket.on('createPlayer', function (name, roomName, playerCount) {
-    var playerCount = getCountPlayer(playerCount);
+    
+    var maxPlayer = parseInt(playerCount.substring(0, 1));
 
     if (!rooms[roomName])
       rooms[roomName] = new room(roomName, false);
 
-    if (playerCount > rooms[roomName].countPlayer) {
+    if (maxPlayer > rooms[roomName].countPlayer) {
       socket.join(roomName);
 
       p[socket.id] = new player(socket.id, name, color, roomName);
@@ -86,7 +87,7 @@ io.on('connection', function (socket) {
 
       loadOtherPlayers();
 
-      if (rooms[roomName].countPlayer === playerCount) {
+      if (rooms[roomName].countPlayer === maxPlayer) {
         rooms[roomName].started = true;
         socket.emit('startTime', socket.id);
       }
@@ -125,10 +126,6 @@ io.on('connection', function (socket) {
     }
   });
 });
-
-const getCountPlayer = (playerCount) => {
-  return parseInt(playerCount.substring(0, 1));
-}
 
 const turnTime = (socketId) => {
   var currentRoom = p[socketId].room;    

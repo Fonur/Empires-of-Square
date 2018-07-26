@@ -99,11 +99,11 @@ function coinFlip() {
 
 const nearestSquare = (clicked, base) => {
   for (var i = 0; i < base.length; i++) {
-    var x = clicked.substring(0, 1);
-    var y = clicked.substring(1, 2);
+    var x = clicked.substring(0, 2);
+    var y = clicked.substring(2, 4);
 
-    var baseX = base[i].substring(0, 1);
-    var baseY = base[i].substring(1, 2);
+    var baseX = base[i].substring(0, 2);
+    var baseY = base[i].substring(2, 4);
 
     if (baseX === x && Math.abs(baseY - y) === 1) {
       return true;
