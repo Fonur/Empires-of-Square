@@ -3,6 +3,7 @@ var firstClicked;
 var socket = io();
 var selected = 0;
 var person;
+var playerColor = [];
 var power;
 
 socket.on('connect', () => {
@@ -27,24 +28,47 @@ socket.on('connect', () => {
     power = document.getElementById('power');
     var colorSquare = document.getElementById(clicked).style.background;    
 
-    console.log(colorSquare);
+    console.log(colorSquare.toString());    
+    
+    var playColorHex = hexToRgb(playerColor[socket.id]);
     
     if (colorSquare === 'rgb(255, 255, 255)') {
       document.getElementById(clicked).setAttribute('style', `background: rgb(230, 198, 111);`);
       capture.innerText = --selected;
-    } else if(colorSquare === 'rgb(230, 198, 111)') {
+      socket.emit('coords', clicked);
+    } else if (colorSquare === 'rgb(230, 198, 111)') {
       document.getElementById(clicked).setAttribute('style', `background: #fff`);
       capture.innerText = ++selected;
+      socket.emit('coords', clicked);
+    } else if (colorSquare !== playColorHex) {
+      document.getElementById(clicked).setAttribute('style', `background: #fff`);
+      capture.innerText = ++selected;
+      socket.emit('coords', clicked);
     }
-    
-    socket.emit('coords', clicked);
   });
   
   attack.addEventListener('click', () => {
     socket.emit('attack');    
   });
-
 });
+
+function componentToHex(c) {
+  var hex = c.toString(16);
+  return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+  return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+function hexToRgb(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  var r = parseInt(result[1], 16);
+  var g =  parseInt(result[2], 16);
+  var b = parseInt(result[3], 16);
+
+  return `rgb(${r}, ${g}, ${b})`;
+}
 
 socket.on('startTime', function(socketId) {
   socket.emit('turnToOther', socketId);
@@ -60,17 +84,18 @@ socket.on('loadOtherPlayers', function(coords) {
   var power = document.getElementById('power'); 
 
   kisiler.innerHTML = ' ';
-  selected = 0;  
-  console.log(coords);  
+  selected = 0;    
   arena.innerHTML = ' ';
   
   createBoard();
 
   coords.forEach(key => {
-    var personName = Object.values(key.name)[0];     
+    var personName = Object.values(key.name)[0];         
+    playerColor[key.id] = key.color;
+    
     if (personName === person) {
       kisiler.insertAdjacentHTML('beforeend',`<h4><span style="background: ${key.color}; color:#fff">${Object.values(key.name)}</span>  </h4><hr width="250px;">`);
-      power.innerText = key.power;
+      power.innerText = key.power;      
     } else {
       kisiler.insertAdjacentHTML('beforeend',`<h4>${Object.values(key.name)}</h4><hr width="250px;">`);
     }
@@ -80,7 +105,7 @@ socket.on('loadOtherPlayers', function(coords) {
       if (el.id === socket.id) {        
         power.value = el.power;
       }
-      document.getElementById(el).setAttribute('style', `background: ${color}`);      
+      document.getElementById(el).setAttribute('style', `background: ${color}`);         
     });
   });  
 

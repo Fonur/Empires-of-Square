@@ -19,8 +19,7 @@ function beforeClick(player, clicked) {
     if (i === player.territories.length)
       return false;
     i++;
-  }
-  
+  }  
 }
 
 function selectTerritory(players, player, clicked, round) { 
@@ -39,7 +38,6 @@ function selectTerritory(players, player, clicked, round) {
   }
 }
 
-
 function removeTerritory(player, clicked) {
   var index = territories.indexOf(clicked);
   if (index > -1) {    
@@ -50,7 +48,6 @@ function removeTerritory(player, clicked) {
     if (index > -1)
       player.territories.splice(index, 1);
   }
-  
 }
 
 function attack(player, round) {
@@ -78,6 +75,7 @@ function capturedTerritory(players, clicked) {
     });
   }
 }
+
 function toggleTerritory(p, player, clicked, round) {
   if (!beforeClick(player, clicked)) {
     selectTerritory(p, player, clicked, round);
