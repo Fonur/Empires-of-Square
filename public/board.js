@@ -5,6 +5,7 @@ var selected = 0;
 var person;
 var playerColor = [];
 var power;
+var multipleMode = false;
 
 socket.on('connect', () => {
   var attack = document.querySelector('#attack');
@@ -22,14 +23,39 @@ socket.on('connect', () => {
     socket.emit('pass');
   });
 
-  arena.addEventListener('click', (e) => {
+  arena.addEventListener('contextmenu', e => {
     var clicked = e.path[0].id;
+    
+    if (!multipleMode) {
+      multipleMode = true;
+      selectIt(e);
+    }
+    else 
+      multipleMode = false;
+    e.preventDefault();
+  });
+
+  arena.addEventListener('mouseover', e => {
+    if (multipleMode) {
+      selectIt(e);
+    }
+  });
+
+  arena.addEventListener('click', (e) => {
+    selectIt(e);
+  });
+
+  attack.addEventListener('click', () => {
+    socket.emit('attack');    
+  });
+
+  function selectIt(e) {
+    var clicked = e.path[0].id;    
     var capture = document.getElementById('territory');
     power = document.getElementById('power');
     var colorSquare = document.getElementById(clicked).style.background;    
 
-    console.log(colorSquare.toString());    
-    
+    console.log(colorSquare.toString());        
     var playColorHex = hexToRgb(playerColor[socket.id]);
     
     if (colorSquare === 'rgb(255, 255, 255)') {
@@ -45,11 +71,8 @@ socket.on('connect', () => {
       capture.innerText = ++selected;
       socket.emit('coords', clicked);
     }
-  });
-  
-  attack.addEventListener('click', () => {
-    socket.emit('attack');    
-  });
+  }
+
 });
 
 function componentToHex(c) {

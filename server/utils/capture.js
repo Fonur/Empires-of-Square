@@ -1,11 +1,16 @@
 var territories = [];
 
 function failCapture(player) {
-  territories.forEach(el => {
+  territories.forEach((el, i) => {
     removeTerritory(player, el);
+
+    if (i === territories.length)
+    {
+      territories = [];
+    }
   });
 
-  territories = [];
+  
 }
 
 function beforeClick(player, clicked) {  
@@ -59,8 +64,8 @@ function attack(player, round) {
   else if (coinFlip()) {
     failCapture(player, territories);
   } else { 
-  player.power = player.territories.length;
-  territories = [];
+    player.power = player.territories.length;
+    territories = [];
   }
 }
  

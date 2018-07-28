@@ -15,7 +15,7 @@ function selectRandom (players){
         position.push(`0${i}0${j}`);
       } else {
         position.push(`${i}${j}`);
-      }      
+      }
     }
   }
 
