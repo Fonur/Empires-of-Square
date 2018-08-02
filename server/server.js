@@ -72,6 +72,8 @@ io.on('connection', function (socket) {
     var maxPlayer;
 
     if (!rooms[roomName]) {
+      if (!playerCount)        
+        return socket.disconnect();            
       rooms[roomName] = new room(roomName, false);
       rooms[roomName].maxPlayer = parseInt(playerCount.substring(0, 1));      
     }

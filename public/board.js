@@ -145,4 +145,7 @@ socket.on('createCoords', function (coords) {
   });
 });
 
+socket.on('disconnect', function() {
+  alert('You are disconnected. This could be because room is full or there is no room that you want to connect.');
+});
 createBoard();
