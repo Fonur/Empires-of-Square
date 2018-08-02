@@ -69,11 +69,14 @@ io.on('connection', function (socket) {
   }
 
   socket.on('createPlayer', function (name, roomName, playerCount) {
-    
-    var maxPlayer = parseInt(playerCount.substring(0, 1));
+    var maxPlayer;
 
-    if (!rooms[roomName])
+    if (!rooms[roomName]) {
       rooms[roomName] = new room(roomName, false);
+      rooms[roomName].maxPlayer = parseInt(playerCount.substring(0, 1));      
+    }
+    
+    maxPlayer = rooms[roomName].maxPlayer;
 
     if (maxPlayer > rooms[roomName].countPlayer) {
       socket.join(roomName);

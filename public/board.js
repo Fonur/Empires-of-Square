@@ -17,6 +17,7 @@ socket.on('connect', () => {
   person = $.deparam(window.location.search).name;
   room = $.deparam(window.location.search).room;
   playerCount = $.deparam(window.location.search).playerCount;
+  
   socket.emit('createPlayer', {name:person}, room, playerCount);
 
   pass.addEventListener('click', () => {
@@ -32,6 +33,7 @@ socket.on('connect', () => {
     }
     else 
       multipleMode = false;
+      
     e.preventDefault();
   });
 
@@ -125,10 +127,10 @@ socket.on('loadOtherPlayers', function(coords) {
     var color = key.color;
     var coordsKey = key.territories;
     coordsKey.forEach(el => { 
-      if (el.id === socket.id) {        
+      if (el.id === socket.id) {
         power.value = el.power;
       }
-      document.getElementById(el).setAttribute('style', `background: ${color}`);         
+      document.getElementById(el).setAttribute('style', `background: ${color}`);
     });
   });  
 

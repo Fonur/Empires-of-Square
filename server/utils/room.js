@@ -4,6 +4,7 @@ class room {
     this.started = started;
     this.players = [];
     this.countPlayer = 0;
+    this.maxPlayer = 2;
     this.connects = [];
     this.remainTime = 30;
   }
